@@ -3,32 +3,34 @@ import data_analysis
 import pandas as pd
 import numpy as np
 import time
+import datetime
+
+
+def get_data():
+    df = pd.read_csv('./testdata.csv')
+    df.rename(columns={'persionId':'personID'}, inplace=True)
+    df.drop(df.columns[0], axis=1, inplace=True)
+    personId_lsit = list(set(df['personID']))
+
+    df.set_index(keys=['personID', 'time'], inplace=True, drop=False)
+    df.drop('personID', inplace=True, axis=1)
+
+    df['timediff'] = 1
+
+    return df, personId_lsit
 
 
 def main():
     st.header('Pose Data Analysis')
 
-    col = st.columns(2)
+    df, personId_list = get_data()
 
-    with col[0]:
-        video = st.empty()
+    st.write(df)
+    st.write(personId_list)
 
-    with col[1]:
-        st.write("예측값 !")
-        st.write(data_analysis.get_predict())
-
-    line_chart1 = st.empty()
-    line_chart2 = st.empty()
-    line_chart3 = st.empty()
-
-    for i in range(40):
-        video.image(f'./test_img/a_{i}.jpg')
-        line_chart1.line_chart(pd.DataFrame(np.random.randn(i), columns=['ax']), height=100)
-        line_chart2.line_chart(pd.DataFrame(np.random.randn(i), columns=['ay']), height=100)
-        line_chart3.line_chart(pd.DataFrame(np.random.randn(i), columns=['az']), height=100)
-        time.sleep(1)
+    video = st.empty()
 
 
 if __name__ == '__main__':
-    st.set_page_config(layout='wide')
+    st.set_page_config(layout='wide', initial_sidebar_state='collapsed')
     main()
